@@ -1,0 +1,78 @@
+﻿<Window x:Class="VkListDownloader2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VkListDownloader2"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="611" Width="818.8">
+    <Grid Loaded="Grid_Loaded" Margin="0,0,0,2">
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                <GradientStop Color="Black" Offset="1"/>
+                <GradientStop Color="White"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="16*"/>
+            <ColumnDefinition Width="193*"/>
+            <ColumnDefinition Width="231*"/>
+            <ColumnDefinition Width="176*"/>
+        </Grid.ColumnDefinitions>
+
+
+
+        <GroupBox x:Name="groupBox" Header="Settings" HorizontalAlignment="Left" Height="103" Margin="10,19,0,0" VerticalAlignment="Top" Width="786" Grid.ColumnSpan="4">
+
+        </GroupBox>
+
+        <TextBox x:Name="txbList" Height="23" Margin="10,33,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.Column="1" HorizontalAlignment="Left" Width="334"/>
+        <TextBox x:Name="txbFolder" Height="23" Margin="0,34,115,0" TextWrapping="Wrap" Text="d:\temp" VerticalAlignment="Top" Grid.Column="2" HorizontalAlignment="Right" Grid.ColumnSpan="2" Width="229"/>
+        <Button x:Name="btnList" Content="Select list" HorizontalAlignment="Left" Margin="95,34,0,0" VerticalAlignment="Top" Width="80" RenderTransformOrigin="1.149,0.45" Click="btnList_Click" Grid.Column="2"/>
+        <Button x:Name="btnFolder" Content="Folder" HorizontalAlignment="Right" Margin="0,35,30,0" VerticalAlignment="Top" Width="80" RenderTransformOrigin="1.149,0.45" Grid.Column="3" Click="btnFolder_Click"/>
+        <Label x:Name="lblThread" Content="Thread count" VerticalAlignment="Top" Height="27" Grid.Column="1" Margin="10,56,28,0"/>
+        <Slider x:Name="slThead" Grid.Column="1" HorizontalAlignment="Left" Margin="10,83,0,0" VerticalAlignment="Top" Width="334" Grid.ColumnSpan="2" Minimum="1" Maximum="100" SmallChange="1" Value="50" ValueChanged="slThead_ValueChanged"/>
+        <Label x:Name="lblRetry" Content="Retry count" VerticalAlignment="Top" Height="31" Grid.Column="2" Margin="192,62,128,0" Grid.ColumnSpan="2"/>
+        <Slider x:Name="slRetry" Grid.Column="2" HorizontalAlignment="Left" Margin="192,84,0,0" VerticalAlignment="Top" Width="314" Grid.ColumnSpan="2" Minimum="1" Maximum="50" SmallChange="1" Value="50" ValueChanged="slRetry_ValueChanged"/>
+        <Button x:Name="btnHelp" Content="?" HorizontalAlignment="Left" Margin="96,78,0,0" VerticalAlignment="Top" Width="16" Grid.Column="2" Height="30" Click="btnHelp_Click"/>
+
+
+        <ListView ItemsSource="{Binding DownloadItems}" x:Name="lvProgress" Margin="15,118,10,29" Grid.ColumnSpan="4">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="File name" Width="450" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="Retry" Width="50" DisplayMemberBinding="{Binding Retry}" />
+                    <GridViewColumn Width="140" Header="Progress">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ProgressBar Width="120" Height="18" Maximum="100" Value="{Binding Progress}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <StatusBar VerticalAlignment="Bottom" Grid.ColumnSpan="4">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <TextBlock>Downloaded count:</TextBlock>
+            <TextBlock x:Name="lblDownloaded" Margin="110,0,0,0" FontWeight="Bold">0</TextBlock>
+            <TextBlock Margin="150,0,0,0">Downloaded skiped:</TextBlock>
+            <TextBlock x:Name="lblSkiped" Margin="265,0,0,0" FontWeight="Bold">0</TextBlock>
+            <ProgressBar x:Name="prgTotal" Width="480" Height="18" Maximum="100" Value="{Binding Progress}" Margin="320,0,0,0"/>
+        </StatusBar>
+
+    </Grid>
+
+
+
+</Window>

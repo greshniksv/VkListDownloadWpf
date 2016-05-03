@@ -1,0 +1,40 @@
+﻿<Window x:Class="VkListDownloader2.winInform"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VkListDownloader2"
+        mc:Ignorable="d"
+        Title="Information" Height="230.452" Width="610.254">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="249*"/>
+            <ColumnDefinition Width="353*"/>
+        </Grid.ColumnDefinitions>
+        <RichTextBox IsReadOnly="True" x:Name="richTextBox" HorizontalAlignment="Left" Height="177" Margin="10,10,0,0" VerticalAlignment="Top" Width="582" Grid.ColumnSpan="2">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="- Add to downloaded file: "/>
+                    <LineBreak/>
+                    <Run Text="&lt;script src=&quot;http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js&quot;&gt;&lt;/script&gt;"/>
+                    <LineBreak/>
+                    <LineBreak Tag=" - Define 'r' and Execute in console:"/>
+                    <Run Text=" - Define 'r' and Execute in console:"/>
+                    <LineBreak/>
+                    <Run Text="jQuery(&quot;.audio&quot;).each(function(i,v){"/>
+                    <LineBreak/>
+                    <Run Text="var artist = jQuery(&quot;#&quot;+v.id).find(&quot;b&quot;).text();"/>
+                    <LineBreak/>
+                    <Run Text="var name = jQuery(&quot;#&quot;+v.id).find(&quot;.title&quot;).text();"/>
+                    <LineBreak/>
+                    <Run Text="var url = jQuery(&quot;#&quot;+v.id).find(&quot;input&quot;).val().replace(&quot;http://&quot;,&quot;h=&quot;);"/>
+                    <LineBreak/>
+                    <Run Text="r+= artist.length +&quot;|&quot;+ artist + name.length +&quot;|&quot;+ name + url.length + &quot;|&quot; + url; "/>
+                    <LineBreak/>
+                    <Run Text="})"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
+    </Grid>
+</Window>

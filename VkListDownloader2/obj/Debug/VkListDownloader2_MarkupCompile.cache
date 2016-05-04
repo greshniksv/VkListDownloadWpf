@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-D:\Projects\VkListDownloader2\VkListDownloader2\obj\Debug\
+D:\Projects\VkListDownloadWpf\VkListDownloader2\obj\Debug\
 VkListDownloader2
 none
 false
 DEBUG;TRACE
-D:\Projects\VkListDownloader2\VkListDownloader2\App.xaml
+D:\Projects\VkListDownloadWpf\VkListDownloader2\App.xaml
 3-1812546166
 
-111762081684
-131569487696
+141601100708
+16539702302
 MainWindow.xaml;winComplete.xaml;winInform.xaml;
 
 False

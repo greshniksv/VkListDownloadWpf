@@ -23,25 +23,10 @@ namespace VkListDownloader2
 
         public static string FixFileName(string name)
         {
-            const string correctChars =
-                "123456789qwertyuiopasdfghjklzxcvbnm,.'!~@#$%&*()-_=+`йцукенгшщзхъфывапролджэячсмитьбюё ";
-            var result = string.Empty;
-            for (int i = 0; i < name.Length; i++)
-            {
-                if (correctChars.Any(x => x == name.ToLower()[i]))
-                {
-                    result += name[i];
-                }
-                else
-                {
-                    //result += ".";
-                }
-            }
-            if (string.IsNullOrEmpty(result))
-            {
-                result = "Unknown";
-            }
-            return result.Length < 40 ? result : result.Substring(0, 40);
+            string illegal = "\"M\"\\a/ry/ h**ad:>> a\\/:*?\"| li*tt|le|| la\"mb.?";
+            string invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
+            name = name.Length < 50 ? name : name.Substring(0, 50);
+            return invalid.Aggregate(name, (current, c) => current.Replace(c.ToString(), ""));
         }
 
         public static bool TestDir(string dir)

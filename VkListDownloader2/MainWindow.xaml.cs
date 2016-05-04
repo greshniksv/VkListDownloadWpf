@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Win32;
@@ -21,10 +20,8 @@ namespace VkListDownloader2
         private ObservableCollection<DownloadItemInfo> _downloadItems;
         public ObservableCollection<DownloadItemInfo> DownloadItems => _downloadItems;
 
-	    public readonly ObservableCollection<DownloadItemInfo> Items = new ObservableCollection<DownloadItemInfo>();
-        private Dictionary<string, string> _urlDictionary;
-        private BackgroundWorker _worker;
-        private string fileList;
+	    public readonly ObservableCollection<DownloadItemInfo> Items = 
+            new ObservableCollection<DownloadItemInfo>();
 
         public MainWindow()
 		{
@@ -32,45 +29,32 @@ namespace VkListDownloader2
             InitializeComponent();
 		}
 
-        private void btnList_Click(object sender, RoutedEventArgs e)
+        private async void btnList_Click(object sender, RoutedEventArgs e)
         {
+            string userName = txbUserName.Text;
+            string password = txbPassword.Password;
             if (!Tools.TestDir(txbFolder.Text))
             {
                 MessageBox.Show("Error use output folder ");
+                return;
             }
 
-            var dialog = new OpenFileDialog
-            {
-                Multiselect = false
-            };
-            var result = dialog.ShowDialog();
-            if (result == true)
-            {
-                LockControl(true);
-                txbList.Text = dialog.FileName;
-                fileList = txbList.Text;
-                _worker = new BackgroundWorker()
-                {
-                    WorkerReportsProgress = true
-                };
-                _worker.DoWork += worker_DoWork;
-                _worker.ProgressChanged += (o, args) => {
-                    
-                };
-                _worker.RunWorkerCompleted += (o, args) => {
-                    LoadToListView(_urlDictionary);
-                    var linkDownloader = new LinkDownloader((int)slThead.Value, (int)slRetry.Value, txbFolder.Text, _urlDictionary);
-                    linkDownloader.Progress += linkDownloader_Progress;
-                    linkDownloader.TotalProgress += LinkDownloader_TotalProgress;
-                    linkDownloader.Complete += LinkDownloader_Complete;
-                };
-                _worker.RunWorkerAsync();
+            LockControl(true);
 
-            }
-           
+            Dictionary<string, Uri> audioList = await Task<Dictionary<string, Uri>>.Factory.StartNew(() =>
+            {
+                ApiGetter getter = new ApiGetter(userName, password);
+                return getter.GetAudios();
+            });
+
+            LoadToListView(audioList);
+            var linkDownloader = new LinkDownloader((int)slThead.Value, (int)slRetry.Value, txbFolder.Text, audioList);
+            linkDownloader.Progress += linkDownloader_Progress;
+            linkDownloader.TotalProgress += LinkDownloader_TotalProgress;
+            linkDownloader.Complete += LinkDownloader_Complete;
         }
 
-        private void LinkDownloader_Complete(Dictionary<string, string> skipedList)
+        private void LinkDownloader_Complete(Dictionary<string, Uri> skipedList)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
             {
@@ -94,52 +78,7 @@ namespace VkListDownloader2
                 lblSkiped.Text = skiped.ToString();
             });
         }
-
-        void worker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            var result = new Dictionary<string, string>();
-            string fileData;
-            using (TextReader reader = new StreamReader(fileList, Encoding.UTF8))
-            {
-                fileData = reader.ReadToEnd();
-            }
-
-            int position = 0;
-            while (position < fileData.Length)
-            {
-                var artist = Tools.FixFileName(GetBlock(fileData, ref position));
-                var title = Tools.FixFileName(GetBlock(fileData, ref position));
-                var url = GetBlock(fileData, ref position);
-                var key = string.Concat(artist, " - ", title);
-                if (!result.ContainsKey(key))
-                {
-                    result.Add(string.Concat(artist, " - ", title), url.Replace("h=", "http://"));
-                }
-            }
-            _urlDictionary = result;
-        }
-
-        private string GetBlock(string data, ref int position)
-        {
-            string charCount = string.Empty;
-            for (int i = position; i <= data.Length; i++)
-            {
-                if (data[i] != '|')
-                {
-                    charCount += data[i];
-                }
-                else
-                {
-                    position = i + 1;
-                    break;
-                }
-            }
-            var charCountInt = Int32.Parse(charCount);
-            string result = data.Substring(position, charCountInt);
-            position += charCountInt;
-            return result;
-        }
-
+        
         void linkDownloader_Progress(string id, int retry, int progress)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
@@ -153,7 +92,7 @@ namespace VkListDownloader2
             });
         }
 
-        private void LoadToListView(Dictionary<string, string> dictionary)
+        private void LoadToListView(Dictionary<string, Uri> dictionary)
         {
             foreach (var item in dictionary)
             {
@@ -186,17 +125,6 @@ namespace VkListDownloader2
             }
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
-            DownloadItems.Add(new DownloadItemInfo
-            {
-                Key = "afsdfsdf",
-                Name = Guid.NewGuid().ToString(),
-                Retry = 0,
-                Progress = 0
-            });
-        }
-
         private void slThead_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             lblThread.Content = $"Thread count: {(int)slThead.Value}";
@@ -209,8 +137,9 @@ namespace VkListDownloader2
 
 	    private void LockControl(bool locked)
 	    {
-	        txbList.IsReadOnly = locked;
-	        txbFolder.IsReadOnly = locked;
+	        txbUserName.IsEnabled = !locked;
+            txbPassword.IsEnabled = !locked;
+            txbFolder.IsEnabled = !locked;
 	        btnList.IsEnabled = !locked;
 	        btnFolder.IsEnabled = !locked;
 	        slRetry.IsEnabled = !locked;

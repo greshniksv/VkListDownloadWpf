@@ -23,7 +23,7 @@ namespace VkListDownloader2
         {
             set
             {
-                richTextBox.AppendText(value);
+                //richTextBox.AppendText(value);
             }
         }
 

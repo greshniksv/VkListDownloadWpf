@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using VkListDownloader2.Getters;
 using VkNet;
 using VkNet.Enums.Filters;
+using VkNet.Exception;
 using VkNet.Model;
 using VkNet.Model.RequestParams;
 
@@ -22,6 +23,7 @@ namespace VkListDownloader2
         public Dictionary<string, Uri> GetAudios()
         {
             var api = new VkApi();
+            
             api.Authorize(new ApiAuthParams
             {
                 ApplicationId = 5448335,

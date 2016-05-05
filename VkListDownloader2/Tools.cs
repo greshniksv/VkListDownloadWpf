@@ -23,9 +23,8 @@ namespace VkListDownloader2
 
         public static string FixFileName(string name)
         {
-            string illegal = "\"M\"\\a/ry/ h**ad:>> a\\/:*?\"| li*tt|le|| la\"mb.?";
             string invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
-            name = name.Length < 50 ? name : name.Substring(0, 50);
+            name = name.Length < 90 ? name : name.Substring(0, 90);
             return invalid.Aggregate(name, (current, c) => current.Replace(c.ToString(), ""));
         }
 

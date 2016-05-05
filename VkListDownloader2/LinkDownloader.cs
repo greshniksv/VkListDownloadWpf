@@ -97,6 +97,7 @@ namespace VkListDownloader2
                 };
                 try
                 {
+                    throw new AbandonedMutexException();
                     wc.DownloadFile(url, tempFileName);
                     wc.DownloadFileAsync(url, tempFileName);
                     _downloaded++;

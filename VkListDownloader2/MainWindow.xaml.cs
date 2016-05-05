@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Win32;
+using VkListDownloader2.DTO;
+using VkNet.Exception;
 
 namespace VkListDownloader2
 {
@@ -17,15 +18,11 @@ namespace VkListDownloader2
 	public partial class MainWindow : Window
 	{
 
-        private ObservableCollection<DownloadItemInfo> _downloadItems;
-        public ObservableCollection<DownloadItemInfo> DownloadItems => _downloadItems;
-
-	    public readonly ObservableCollection<DownloadItemInfo> Items = 
+	    private readonly ObservableCollection<DownloadItemInfo> downloadedItems = 
             new ObservableCollection<DownloadItemInfo>();
 
         public MainWindow()
 		{
-            _downloadItems = new ObservableCollection<DownloadItemInfo>();
             InitializeComponent();
 		}
 
@@ -39,14 +36,28 @@ namespace VkListDownloader2
                 return;
             }
 
-            LockControl(true);
+           
 
             Dictionary<string, Uri> audioList = await Task<Dictionary<string, Uri>>.Factory.StartNew(() =>
             {
-                ApiGetter getter = new ApiGetter(userName, password);
-                return getter.GetAudios();
+                try
+                {
+                    ApiGetter getter = new ApiGetter(userName, password);
+                    return getter.GetAudios();
+                }
+                catch (VkApiAuthorizationException)
+                {
+                    MessageBox.Show("Invalid authorization. Please check your email and password.");
+                }
+                return null;
             });
 
+            if (audioList == null)
+            {
+                return;
+            }
+
+            LockControl(true);
             LoadToListView(audioList);
             var linkDownloader = new LinkDownloader((int)slThead.Value, (int)slRetry.Value, txbFolder.Text, audioList);
             linkDownloader.Progress += linkDownloader_Progress;
@@ -58,14 +69,9 @@ namespace VkListDownloader2
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
             {
-                winComplete complete = new winComplete();
-                StringBuilder skiped = new StringBuilder();
-                foreach (var item in skipedList)
-                {
-                    skiped.AppendLine($"{item.Key} \t- {item.Value}");
-                }
-                complete.Result = skiped.ToString();
+                WinComplete complete = new WinComplete {Result = skipedList};
                 complete.ShowDialog();
+                LockControl(false);
             });
         }
 
@@ -83,7 +89,7 @@ namespace VkListDownloader2
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
             {
-                var item = Items.FirstOrDefault(x => x.Key == id);
+                var item = downloadedItems.FirstOrDefault(x => x.Key == id);
                 if (item != null)
                 {
                     item.Retry = retry;
@@ -96,7 +102,7 @@ namespace VkListDownloader2
         {
             foreach (var item in dictionary)
             {
-                Items.Add(new DownloadItemInfo
+                downloadedItems.Add(new DownloadItemInfo
                 {
                     Key = Tools.GetMD5Hash(string.Concat(item.Key, item.Value)),
                     Name = item.Key,
@@ -104,7 +110,7 @@ namespace VkListDownloader2
                     Progress = 0
                 });
             }
-            lvProgress.ItemsSource = Items;
+            lvProgress.ItemsSource = downloadedItems;
         }
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)

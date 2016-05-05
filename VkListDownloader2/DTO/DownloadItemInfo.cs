@@ -2,55 +2,55 @@
 using System.Runtime.CompilerServices;
 using VkListDownloader2.Annotations;
 
-namespace VkListDownloader2
+namespace VkListDownloader2.DTO
 {
-    public class DownloadItemInfo : INotifyPropertyChanged
+    public sealed class DownloadItemInfo : INotifyPropertyChanged
     {
-        private string _key;
-        private string _name;
-        private int _retry;
-        private int _progress;
+        private string key;
+        private string name;
+        private int retry;
+        private int progress;
 
         public string Key {
-            get { return _key; }
+            get { return key; }
             set
             {
-                _key = value;
+                key = value;
                 RaisePropertyChanged(nameof(Key));
             }
         }
         public string Name {
-            get { return _name; }
+            get { return name; }
             set
             {
-                _name = value;
+                name = value;
                 RaisePropertyChanged(nameof(Name));
             }
         }
 
         public int Retry
         {
-            get { return _retry; }
+            get { return retry; }
             set
             {
-                _retry = value;
+                retry = value;
                 RaisePropertyChanged(nameof(Retry));
             }
         }
 
         public int Progress
         {
-            get { return _progress; }
+            get { return progress; }
             set
             {
-                _progress = value;
+                progress = value;
                 RaisePropertyChanged(nameof(Progress));
             }
         }
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

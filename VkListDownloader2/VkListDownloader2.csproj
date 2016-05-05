@@ -70,6 +70,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DTO\SkipedItem.cs" />
     <Compile Include="Getters\ApiGetter.cs" />
     <Compile Include="Getters\IGetter.cs" />
     <Compile Include="Getters\MetadataGetter.cs" />
@@ -89,7 +90,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DownloadItemInfo.cs" />
+    <Compile Include="DTO\DownloadItemInfo.cs" />
     <Compile Include="LinkDownloader.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
